@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+</head>
+<body>
+<h1><%= title %></h1>
+<p>Welcome to <%= title %></p>
+<div>
+    <h1>Helper</h1>
+    <div>time <%= JSON.stringify(data.time.init())%></div>
+    <h1>Memcached</h1>
+    <div>memcached: <%= data.cdata %></div>
+    <h1>Mysql</h1>
+    <div>总数: <%= data.count %></div>
+    <div>一条记录: <%= data.gameinfo %></div>
+</div>
+</body>
+</html>
