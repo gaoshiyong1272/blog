@@ -4,6 +4,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var config = require('./config');
+var session = require('express-session');
+var RedisStore = require('connect-redis')(session);
 
 /**工具函数**/
 var helpers = require('./helper');
@@ -23,6 +25,17 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'static')));
+/**启动session服务**/
+app.use(session({
+  secret: 'express-test',
+  name: 'app.sid',
+  cookie: {
+    httpOnly: true,
+    path: '/',
+    maxAge: 24*60*60*1000
+  },
+  store: new RedisStore({host: '127.0.0.1', port: 6379})
+}));
 
 
 /**

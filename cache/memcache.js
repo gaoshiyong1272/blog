@@ -25,11 +25,29 @@ class Memcache {
         this.init();
     }
 
+    checkVal (val){
+        if(typeof val === 'object') {
+            val = JSON.stringify(val);
+        }
+        return val;
+    }
+
     query(){
         return new Promise((resolve, reject) => {
             var handle = (err, data) => {
-                if(err) reject(err, data);
-                else resolve(data)
+                if(err){
+                    reject(err, data);
+                }
+
+                if(data === null) {
+                    resolve(null);
+                }
+
+                try{
+                    resolve(JSON.parse(data));
+                }catch (e) {
+                    resolve(data);
+                }
             };
 
             if(this.type === 'get'){
@@ -65,7 +83,7 @@ class Memcache {
     set(key , value , lifetime){
         this.type = 'set';
         this.keyword = key;
-        this.value = value;
+        this.value = this.checkVal(value);
         this.lifetime = lifetime;
         return this.query();
     }
@@ -73,7 +91,7 @@ class Memcache {
     replace(key, value, lifetime) {
         this.type = 'replace';
         this.keyword = key;
-        this.value = value;
+        this.value = this.checkVal(value);
         this.lifetime = lifetime;
         return this.query();
     }
@@ -81,7 +99,7 @@ class Memcache {
     add(key, value, lifetime) {
         this.type = 'replace';
         this.keyword = key;
-        this.value = value;
+        this.value = this.checkVal(value);
         this.lifetime = lifetime;
         return this.query();
     }

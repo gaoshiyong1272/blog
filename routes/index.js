@@ -10,6 +10,8 @@ router.get('/', function (req, res, next) {
 	var data2 = [{name: 'gaoshiyong1272', age: 30}];
 	var count = 0;
 
+
+
 	/**数据管理器**/
 	var datSync = req.$helpers.dataSync.init(
 	['cdata', 'count', 'time'],
@@ -106,6 +108,18 @@ router.get('/', function (req, res, next) {
     /**时间**/
     datSync.commit('time', time);
 
+});
+
+router.get('/get-session',function (req,res, next) {
+	const session  = req.session;
+	if(!session.number) {
+		session.number = 0;
+	}
+	session.number++;
+
+	res.json({
+		number : session.number
+	});
 });
 
 module.exports = router;
