@@ -4,37 +4,51 @@ var createQueryBuilder = require('../database');
 
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
+router.get('/', async function (req, res, next) {
+	var tag = res.$module['blog_tags'];
+	var counts = await tag.findAll({where: {id: 1},
+		include: [
+			{
+				model: res.$module['blog_articles'],
+				through: {}
+			}
+		],
+
+	});
+	console.log(counts)
+	res.render('test', {data: counts});
+
+	return ;
+
 	var time = req.$helpers.time({b: 2});
 	var data = [{name: 'gaoshiyong', age: 20}];
 	var data2 = [{name: 'gaoshiyong1272', age: 30}];
 	var count = 0;
 
 
-
 	/**数据管理器**/
 	var datSync = req.$helpers.dataSync.init(
-	['cdata', 'count', 'time'],
-	(data) => {
-		res.render('index', {title: 'Express', data});
-	});
+		['cdata', 'count', 'time'],
+		(data) => {
+			res.render('index', {title: 'Express', data});
+		});
 
 
 	datSync.commit('count', 130);
 
 	req.$cache.set('foo', JSON.stringify(data), 10000)
-		.then((res)=>{
+		.then((res) => {
 			console.log(res);
 		});
 
 	req.$cache.replace('foo', JSON.stringify(data2), 10000)
-	.then(() => {
-		req.$cache.get('foo')
-		.then((res) => {
-			datSync.commit('cdata', res['foo']);
-			console.log(res['foo']);
+		.then(() => {
+			req.$cache.get('foo')
+				.then((res) => {
+					datSync.commit('cdata', res['foo']);
+					console.log(res['foo']);
+				});
 		});
-	});
 
 	// req.$cache.get('foo')
 	// 	.then((res) => {
@@ -102,23 +116,20 @@ router.get('/', function (req, res, next) {
 	// 	});
 
 
-
-
-
-    /**时间**/
-    datSync.commit('time', time);
+	/**时间**/
+	datSync.commit('time', time);
 
 });
 
-router.get('/get-session',function (req,res, next) {
-	const session  = req.session;
-	if(!session.number) {
+router.get('/get-session', function (req, res, next) {
+	const session = req.session;
+	if (!session.number) {
 		session.number = 0;
 	}
 	session.number++;
 
 	res.json({
-		number : session.number
+		number: session.number
 	});
 });
 

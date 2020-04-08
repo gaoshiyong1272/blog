@@ -4,8 +4,9 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var config = require('./config');
-var session = require('express-session');
-var RedisStore = require('connect-redis')(session);
+//var session = require('express-session');
+//var redisStore = require('connect-redis')(session);
+var Module = require('./models');
 
 /**工具函数**/
 var helpers = require('./helper');
@@ -19,6 +20,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -26,16 +28,16 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'static')));
 /**启动session服务**/
-app.use(session({
-  secret: 'express-test',
-  name: 'app.sid',
-  cookie: {
-    httpOnly: true,
-    path: '/',
-    maxAge: 24*60*60*1000
-  },
-  store: new RedisStore({host: '127.0.0.1', port: 6379})
-}));
+// app.use(session({
+//   secret: 'express-test',
+//   name: 'app.sid',
+//   cookie: {
+//     httpOnly: true,
+//     path: '/',
+//     maxAge: 24*60*60*1000
+//   },
+//   //store: redisStore
+// }));
 
 
 /**
@@ -44,20 +46,21 @@ app.use(session({
 app.use(function (req, res, next) {
   req['$helpers'] = helpers;
   req['$cache'] = cache;
+  res['$module'] = Module;
   next()
 });
 
 /**
  * 允许跨域
  */
-app.all('*', function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Content-Type,Content-Length, Authorization, Accept,X-Requested-With");
-  res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
-  res.header("X-Powered-By", ' 3.2.1');
-  if (req.method === "OPTIONS") res.send(200);
-  else next();
-});
+// app.all('*', function (req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Headers", "Content-Type,Content-Length, Authorization, Accept,X-Requested-With");
+//   res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
+//   res.header("X-Powered-By", ' 3.2.1');
+//   if (req.method === "OPTIONS") res.send(200);
+//   else next();
+// });
 
 /**
  * 加载页面路由
