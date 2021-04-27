@@ -27,6 +27,6 @@
     },
     "devDependencies": {
         "memcached": "^2.2.2",
-        "redis"    : "^2.8.0"
+        "redis"    : "^3.1.1"
     }
 }
